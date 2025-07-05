@@ -3,11 +3,14 @@
 #define ASSIGNMENT3_H
 #include <stdio.h>
 #include <stdbool.h>
-#define MAX_WALLET_SIZE 50
+
+#define MAX_WALLET_SIZE 100
+
 typedef struct {
 	int dollarAmount;
 	bool processed;
 	bool refunded;
-}transaction;
+}walletSlot;
+
 #endif 
 
