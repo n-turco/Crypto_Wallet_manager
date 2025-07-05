@@ -18,9 +18,15 @@
     <ClCompile Include="Assignment3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="memoryManagement.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assignment3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memoryManagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
