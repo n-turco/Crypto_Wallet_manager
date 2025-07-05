@@ -1,12 +1,11 @@
 #include "Assignment3.h"
 #include "memoryManagement.h"
 
-bool isWalletEmpty(walletSlot* transaction);
-bool isWalletFull(walletSlot* transaction);
+
 
 int main() {
 	walletSlot* transaction = intializeWallet();
-	
+	freeAllocatedMemory(transaction);
 	return 0;
 }
 

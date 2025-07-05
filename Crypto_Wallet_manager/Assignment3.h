@@ -7,10 +7,14 @@
 #define MAX_WALLET_SIZE 100
 
 typedef struct {
-	int dollarAmount;
+	double dollarAmount;
 	bool processed;
 	bool refunded;
+	int topIndex;
 }walletSlot;
+
+bool isWalletEmpty(walletSlot* transaction);
+bool isWalletFull(walletSlot* transaction);
 
 #endif 
 
