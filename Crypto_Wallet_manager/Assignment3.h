@@ -1,20 +1,32 @@
 #pragma once
 #ifndef ASSIGNMENT3_H
 #define ASSIGNMENT3_H
+
 #include <stdio.h>
 #include <stdbool.h>
 
-#define MAX_WALLET_SIZE 100
+#define WALLET_CAPACITY 30
 
 typedef struct {
-	double dollarAmount;
-	bool processed;
-	bool refunded;
-	int topIndex;
-}walletSlot;
+    double transactionAmount;
+    bool processed;
+    bool refunded;
+} walletSlot;
 
-bool isWalletEmpty(walletSlot* transaction);
-bool isWalletFull(walletSlot* transaction);
+typedef struct {
+    walletSlot* transactions;
+    int topIndex;
+    int capacity;
+} wallet;
 
-#endif 
+wallet* initializeWallet(void);
+bool resizeWallet(wallet* walletPtr);
+void freeWallet(wallet* walletPtr);
+walletSlot newTransaction(double dollarAmount);
+void addTransaction(wallet* walletPtr);
+void pushToWallet(wallet* walletPtr, walletSlot transactionToAdd);
+void printWallet(wallet* walletPtr);
+bool isWalletEmpty(wallet* walletPtr);
+bool isWalletFull(wallet* walletPtr);
 
+#endif
