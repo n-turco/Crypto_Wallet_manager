@@ -26,6 +26,7 @@ walletSlot newTransaction(double dollarAmount);
 void addTransaction(wallet* walletPtr);
 void pushToWallet(wallet* walletPtr, walletSlot transactionToAdd);
 void printWallet(wallet* walletPtr);
+void applyTransactionFees(wallet* walletPtr);
 bool isWalletEmpty(wallet* walletPtr);
 bool isWalletFull(wallet* walletPtr);
 

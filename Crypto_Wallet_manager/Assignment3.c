@@ -12,6 +12,8 @@ int main() {
 	
 	addTransaction(walletPtr);
 	printWallet(walletPtr);
+	applyTransactionFees(walletPtr);
+	printWallet(walletPtr);
 	freeWallet(walletPtr);
 
     return 0;
@@ -169,6 +171,25 @@ void printWallet(wallet* walletPtr) {
 		const char* processed = walletPtr->transactions[i].processed ? "Yes" : "No";
 		const char* refunded = walletPtr->transactions[i].refunded ? "Yes" : "No";
 		printf("Transaction %c: $%.2lf, Processed: %s, Refunded: %s\n", (i + 1), walletPtr->transactions[i].transactionAmount, processed, refunded);
+	}
+}
+void applyTransactionFees(wallet* walletPtr) {
+	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
+		printf("Wallet is empty.\n");
+		return;
+	}
+	int convertToDecimal = 100;
+	double percentageFee = 0;
+	printf("Enter fee percentage: ");
+	scanf_s("%lf", &percentageFee);
+	while (getchar() != '\n');
+	//converts to decimal
+	percentageFee = percentageFee / convertToDecimal;
+	for (int i = 0; i <= walletPtr->topIndex; i++) {
+		//calculates the amount to be subtracted
+		double feeAmount = walletPtr->transactions[i].transactionAmount * percentageFee;
+		//subtracts the fee from the transactionAmount
+		walletPtr->transactions[i].transactionAmount = walletPtr->transactions[i].transactionAmount - feeAmount;
 	}
 }
 //
