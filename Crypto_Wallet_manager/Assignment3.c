@@ -12,8 +12,8 @@ int main() {
 	
 	addTransaction(walletPtr);
 	printWallet(walletPtr);
-	applyTransactionFees(walletPtr);
-	printWallet(walletPtr);
+	//applyTransactionFees(walletPtr);
+	findHighestTransaction(walletPtr);
 	freeWallet(walletPtr);
 
     return 0;
@@ -173,6 +173,13 @@ void printWallet(wallet* walletPtr) {
 		printf("Transaction %c: $%.2lf, Processed: %s, Refunded: %s\n", (i + 1), walletPtr->transactions[i].transactionAmount, processed, refunded);
 	}
 }
+//
+//FUNCTION : applyTransactionFees
+//DESCRIPTION : This function takes user input for a percentage fee and applies it to the transactions in the wallet.
+//				It then prints the new transaction amounts to the screen.
+//PARAMETERS : 	takes a struct pointer to the wallet.
+//RETURNS : Does not have a return value
+//
 void applyTransactionFees(wallet* walletPtr) {
 	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
 		printf("Wallet is empty.\n");
@@ -191,6 +198,22 @@ void applyTransactionFees(wallet* walletPtr) {
 		//subtracts the fee from the transactionAmount
 		walletPtr->transactions[i].transactionAmount = walletPtr->transactions[i].transactionAmount - feeAmount;
 	}
+	printf("New Transaction amounts based on %.2lf%% rate\n", percentageFee);
+	printWallet(walletPtr);
+}
+void findHighestTransaction(wallet* walletPtr) {
+	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
+		printf("Wallet is empty.\n");
+		return;
+	}
+	walletSlot highestAmount = walletPtr->transactions[0];
+	for (int i = 0; i <= walletPtr->topIndex; i++) {
+		
+		if (walletPtr->transactions[i].transactionAmount > highestAmount.transactionAmount) {
+			highestAmount = walletPtr->transactions[i];
+		}
+	}
+	printf("Highest transaction amount: $%.2lf\n", highestAmount.transactionAmount);
 }
 //
 //FUNCTION : freeWallet
