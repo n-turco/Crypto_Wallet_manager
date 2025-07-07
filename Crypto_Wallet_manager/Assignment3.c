@@ -10,10 +10,12 @@ int main() {
         printf("Wallet initialized successfully.\n");  
     }
 	
-	addTransaction(walletPtr);
-	printWallet(walletPtr);
+	//addTransaction(walletPtr);
+	//printWallet(walletPtr);
 	//applyTransactionFees(walletPtr);
-	findHighestTransaction(walletPtr);
+	//findHighestTransaction(walletPtr);
+	//swapTransactions(walletPtr);
+	//printWallet(walletPtr);
 	freeWallet(walletPtr);
 
     return 0;
@@ -201,6 +203,14 @@ void applyTransactionFees(wallet* walletPtr) {
 	printf("New Transaction amounts based on %.2lf%% rate\n", percentageFee);
 	printWallet(walletPtr);
 }
+//
+//FUNCTION : findHighestTransaction
+//DESCRIPTION : This function stores the value of the first transaction in the wallet than iterates through the wallet comparing
+//				if the value is less. If it is less it swaps the value into the temporary walletSlot. The highest value gets printed at
+//				the end.
+//PARAMETERS : 	takes a struct pointer to the wallet.
+//RETURNS : Does not return any value.
+//
 void findHighestTransaction(wallet* walletPtr) {
 	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
 		printf("Wallet is empty.\n");
@@ -214,6 +224,89 @@ void findHighestTransaction(wallet* walletPtr) {
 		}
 	}
 	printf("Highest transaction amount: $%.2lf\n", highestAmount.transactionAmount);
+}
+//
+//FUNCTION : swapTransactions
+//DESCRIPTION : This function takes user input for two wallet indicies and performs a index swap using a basic swap technique
+//				with a temporary variable.
+//PARAMETERS : 	takes a struct pointer to the wallet.
+//RETURNS : Does not return any value.
+//
+void swapTransactions(wallet* walletPtr) {
+	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
+		printf("Wallet is empty.\n");
+		return;
+	}
+	int index1 = 0;
+	int index2 = 0;
+
+	printf("Enter two indices to swap (1 to %d): ", walletPtr->topIndex + 1);
+
+	// Get first valid index
+	while (scanf_s("%d", &index1) != 1 || index1 < 1 || index1 > walletPtr->topIndex + 1) {
+		printf("Invalid index. Enter index between 1 and %d: ", walletPtr->topIndex + 1);
+		//clear buffer if input is wrong
+		while (getchar() != '\n');
+	}
+	// clear buffer when it exits loop
+	while (getchar() != '\n'); 
+
+	while (scanf_s("%d", &index2) != 1 || index2 < 1 || index2 > walletPtr->topIndex + 1) {
+		printf("Invalid index. Enter index between 1 and %d: ", walletPtr->topIndex + 1);
+		while (getchar() != '\n');
+	}
+	while (getchar() != '\n');
+	//decrement to array index associated with input
+	index1--;
+	index2--;
+	
+	walletSlot temp = walletPtr->transactions[index1];
+	walletPtr->transactions[index1] = walletPtr->transactions[index2];
+	walletPtr->transactions[index2] = temp;
+
+	printf("Transactions at indices %d and %d swapped successfully.\n", index1 + 1, index2 + 1);
+}
+//
+//FUNCTION : manageFlags
+//DESCRIPTION : This function takes prompts a sub menu to manage different flags in the wallet to set processed, 
+//				clear processed and toggle refunded
+//PARAMETERS : 	takes a struct pointer to the wallet.
+//RETURNS : Does not return any value.
+//
+void manageFlags(wallet* walletPtr) {
+	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
+		printf("Wallet is empty.\n");
+		return;
+	}
+	printf("Enter transaction index: ");
+	int index = 0;
+	while (scanf_s("%d", &index) != 1 || index < 1 || index > walletPtr->topIndex + 1) {
+		printf("Invalid index. Enter index between 1 and %d: ", walletPtr->topIndex + 1);
+		while (getchar() != '\n');
+	}
+	while (getchar() != '\n');
+	printf("1. Set Processed\n");
+	printf("1. Clear Processed\n");
+	printf("1. Toggle Refund\n");
+	int menu = 0;
+	while (scanf_s("%d", &index) != 1) {
+		printf("Invalid Input. Select a number.\n");
+	}
+	switch (menu)
+	{
+	case 1:
+		//setprocessed
+		break;
+	case 2:
+		//clear processed
+		break;
+	case 3:
+		//toggle refund
+		break;
+	default:
+		printf("invalid option.\n");
+		break;
+	}
 }
 //
 //FUNCTION : freeWallet

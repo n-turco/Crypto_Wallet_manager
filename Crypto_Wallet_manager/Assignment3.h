@@ -28,6 +28,8 @@ void pushToWallet(wallet* walletPtr, walletSlot transactionToAdd);
 void printWallet(wallet* walletPtr);
 void applyTransactionFees(wallet* walletPtr);
 void findHighestTransaction(wallet* walletPtr);
+void swapTransactions(wallet* walletPtr);
+void manageFlags(wallet* walletPtr);
 bool isWalletEmpty(wallet* walletPtr);
 bool isWalletFull(wallet* walletPtr);
 
