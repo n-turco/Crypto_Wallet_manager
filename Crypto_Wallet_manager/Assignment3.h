@@ -6,11 +6,14 @@
 #include <stdbool.h>
 
 #define WALLET_CAPACITY 30
+#define PROCESSED_BIT (1 << 0)
+#define REFUNDED_BIT (1 << 1)
 
 typedef struct {
     double transactionAmount;
-    bool processed;
-    bool refunded;
+    //flags to hold status of processed and refunded
+    unsigned char flags;
+ 
 } walletSlot;
 
 typedef struct {
@@ -30,6 +33,9 @@ void applyTransactionFees(wallet* walletPtr);
 void findHighestTransaction(wallet* walletPtr);
 void swapTransactions(wallet* walletPtr);
 void manageFlags(wallet* walletPtr);
+void setProcessed(walletSlot* slot);
+void clearProcessed(walletSlot* slot);
+void toggleRefunded(walletSlot* slot);
 bool isWalletEmpty(wallet* walletPtr);
 bool isWalletFull(wallet* walletPtr);
 

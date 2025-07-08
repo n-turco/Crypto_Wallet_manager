@@ -10,8 +10,8 @@ int main() {
         printf("Wallet initialized successfully.\n");  
     }
 	
-	//addTransaction(walletPtr);
-	//printWallet(walletPtr);
+	addTransaction(walletPtr);
+	printWallet(walletPtr);
 	//applyTransactionFees(walletPtr);
 	//findHighestTransaction(walletPtr);
 	//swapTransactions(walletPtr);
@@ -72,8 +72,9 @@ walletSlot newTransaction(double dollarAmount) {
     walletSlot newWalletSlot;
     //intializes a new transaction and sets the dollar amount to the user supplied value, processed and refund flag to false.
     newWalletSlot.transactionAmount = dollarAmount;
-    newWalletSlot.processed = false;
-    newWalletSlot.refunded = false;
+	newWalletSlot.flags &= ~PROCESSED_BIT;
+	newWalletSlot.flags &= ~REFUNDED_BIT;
+  
     return newWalletSlot;
 }
 //
@@ -169,10 +170,10 @@ void printWallet(wallet* walletPtr) {
 	}
 	printf("Transactions\n");
 	for (int i = 0; i <= walletPtr->topIndex; i++) {
-		//ternary operator used to determine whether processed or refunded are true or false
-		const char* processed = walletPtr->transactions[i].processed ? "Yes" : "No";
-		const char* refunded = walletPtr->transactions[i].refunded ? "Yes" : "No";
-		printf("Transaction %c: $%.2lf, Processed: %s, Refunded: %s\n", (i + 1), walletPtr->transactions[i].transactionAmount, processed, refunded);
+		//ternary operator used chek whether processed or refunded are true or false
+		printf("Transaction %d: $%.2lf, Processed: %s, Refunded: %s\n", (i + 1), walletPtr->transactions[i].transactionAmount, 
+			(walletPtr->transactions[i].flags & PROCESSED_BIT) ? "Yes" : "No", 
+			(walletPtr->transactions[i].flags & REFUNDED_BIT) ? "Yes" : "No");
 	}
 }
 //
@@ -268,7 +269,7 @@ void swapTransactions(wallet* walletPtr) {
 }
 //
 //FUNCTION : manageFlags
-//DESCRIPTION : This function takes prompts a sub menu to manage different flags in the wallet to set processed, 
+//DESCRIPTION : This function prompts a sub menu to manage different flags in the wallet to set processed, 
 //				clear processed and toggle refunded
 //PARAMETERS : 	takes a struct pointer to the wallet.
 //RETURNS : Does not return any value.
@@ -284,28 +285,52 @@ void manageFlags(wallet* walletPtr) {
 		printf("Invalid index. Enter index between 1 and %d: ", walletPtr->topIndex + 1);
 		while (getchar() != '\n');
 	}
+	
 	while (getchar() != '\n');
 	printf("1. Set Processed\n");
-	printf("1. Clear Processed\n");
-	printf("1. Toggle Refund\n");
+	printf("2. Clear Processed\n");
+	printf("3. Toggle Refund\n");
+	printf("4. Display all flags\n");
 	int menu = 0;
 	while (scanf_s("%d", &index) != 1) {
+		while (getchar() != '\n');
 		printf("Invalid Input. Select a number.\n");
 	}
 	switch (menu)
 	{
 	case 1:
-		//setprocessed
+		setProcessed(&walletPtr->transactions[index]);
 		break;
 	case 2:
-		//clear processed
+		clearProcessed(&walletPtr->transactions[index]);
 		break;
 	case 3:
-		//toggle refund
+		toggleRefunded(&walletPtr->transactions[index]);
+		break;
+	case 4: 
+		printWallet(walletPtr);
 		break;
 	default:
 		printf("invalid option.\n");
 		break;
+	}
+}
+void setProcessed(walletSlot* slot) {
+	if (slot != NULL) {
+		//set processed bit
+		slot->flags |= PROCESSED_BIT;
+	}
+}
+void clearProcessed(walletSlot* slot) {
+	if (slot != NULL) {
+		//clear processed bit
+		slot->flags &= ~PROCESSED_BIT;
+	}
+}
+void toggleRefunded(walletSlot* slot) {
+	if (slot != NULL) {
+		//toggle refunded bit
+		slot->flags ^= REFUNDED_BIT;
 	}
 }
 //
