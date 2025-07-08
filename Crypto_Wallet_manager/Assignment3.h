@@ -36,6 +36,7 @@ void manageFlags(wallet* walletPtr);
 void setProcessed(walletSlot* slot);
 void clearProcessed(walletSlot* slot);
 void toggleRefunded(walletSlot* slot);
+void totalAndAverage(wallet* walletPtr);
 bool isWalletEmpty(wallet* walletPtr);
 bool isWalletFull(wallet* walletPtr);
 

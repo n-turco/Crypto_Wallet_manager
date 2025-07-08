@@ -11,6 +11,9 @@ int main() {
     }
 	
 	addTransaction(walletPtr);
+	//printWallet(walletPtr);
+	//manageFlags(walletPtr);
+	totalAndAverage(walletPtr);
 	printWallet(walletPtr);
 	//applyTransactionFees(walletPtr);
 	//findHighestTransaction(walletPtr);
@@ -70,10 +73,10 @@ bool resizeWallet(wallet* walletPtr) {
 //
 walletSlot newTransaction(double dollarAmount) {
     walletSlot newWalletSlot;
-    //intializes a new transaction and sets the dollar amount to the user supplied value, processed and refund flag to false.
+    //intializes a new transaction and sets the dollar amount to the user supplied value
     newWalletSlot.transactionAmount = dollarAmount;
-	newWalletSlot.flags &= ~PROCESSED_BIT;
-	newWalletSlot.flags &= ~REFUNDED_BIT;
+	//sets all bits to 0
+	newWalletSlot.flags = 0;
   
     return newWalletSlot;
 }
@@ -292,7 +295,7 @@ void manageFlags(wallet* walletPtr) {
 	printf("3. Toggle Refund\n");
 	printf("4. Display all flags\n");
 	int menu = 0;
-	while (scanf_s("%d", &index) != 1) {
+	while (scanf_s("%d", &menu) != 1) {
 		while (getchar() != '\n');
 		printf("Invalid Input. Select a number.\n");
 	}
@@ -315,23 +318,65 @@ void manageFlags(wallet* walletPtr) {
 		break;
 	}
 }
+//
+//FUNCTION : setProcessed
+//DESCRIPTION : This function takes a pointer to a wallet slot and sets the first bit using OR '|' bitwise
+//				If either bit is a 1 or 0, it will return 1.
+//PARAMETERS : 	takes a struct pointer to the walletSlot.
+//RETURNS : Does not return any value.
+//
 void setProcessed(walletSlot* slot) {
 	if (slot != NULL) {
 		//set processed bit
 		slot->flags |= PROCESSED_BIT;
 	}
 }
+//
+//FUNCTION : clearProcessed
+//DESCRIPTION : This function takes a pointer to a wallet slot and clears the first bit using AND NOT '& ~' bitwise
+//				If the bit is 1, it will return 0. 
+//PARAMETERS : 	takes a struct pointer to the walletSlot.
+//RETURNS : Does not return any value.
+//
 void clearProcessed(walletSlot* slot) {
 	if (slot != NULL) {
 		//clear processed bit
 		slot->flags &= ~PROCESSED_BIT;
 	}
 }
+//
+//FUNCTION : toggleRefunded
+//DESCRIPTION : This function takes a pointer to a wallet slot and toggles the second bit using XOR '^' bitwise
+//				If the bits are different it returns 1 
+//PARAMETERS : 	takes a struct pointer to the walletSlot.
+//RETURNS : Does not return any value.
+//
 void toggleRefunded(walletSlot* slot) {
 	if (slot != NULL) {
 		//toggle refunded bit
 		slot->flags ^= REFUNDED_BIT;
 	}
+}
+//
+//FUNCTION : totalAndAverage
+//DESCRIPTION : This function takes a pointer to the wallet, it sums of the total value of each transaction and calculates
+//				the average amount per transaction
+//PARAMETERS : 	takes a struct pointer to the wallet.
+//RETURNS : Does not return any value.
+//
+void totalAndAverage(wallet* walletPtr) {
+	if (walletPtr == NULL || isWalletEmpty(walletPtr)) {
+		printf("Wallet is empty.\n");
+		return;
+	}
+	double totalAmount = 0;
+	double averageTransaction = 0;
+	for (int i = 0; i <= walletPtr->topIndex; i++) {
+		totalAmount += walletPtr->transactions[i].transactionAmount;
+		averageTransaction = totalAmount / walletPtr->topIndex;
+	}
+	printf("Total Transaction Amount: $%.2lf\n", totalAmount);
+	printf("Average Transaction value: $%.2lf\n", averageTransaction);
 }
 //
 //FUNCTION : freeWallet
