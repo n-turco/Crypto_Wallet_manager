@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define WALLET_CAPACITY 30
+#define WALLET_CAPACITY 5
 #define PROCESSED_BIT (1 << 0)
 #define REFUNDED_BIT (1 << 1)
 
@@ -21,6 +21,8 @@ typedef struct {
     int topIndex;
     int capacity;
 } wallet;
+
+typedef void (*menu[])();
 
 wallet* initializeWallet(void);
 bool resizeWallet(wallet* walletPtr);

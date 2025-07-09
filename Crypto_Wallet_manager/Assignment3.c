@@ -6,45 +6,72 @@
 int main() {
 	//intialize wallet
     wallet* walletPtr = initializeWallet();
-    if (walletPtr) {
-        printf("Wallet initialized successfully.\n");  
-    }
-	
-	addTransaction(walletPtr);
-	//printWallet(walletPtr);
-	//manageFlags(walletPtr);
-	totalAndAverage(walletPtr);
-	printWallet(walletPtr);
-	//applyTransactionFees(walletPtr);
-	//findHighestTransaction(walletPtr);
-	//swapTransactions(walletPtr);
-	//printWallet(walletPtr);
+   
+	void (*menu[])(wallet* walletPtr) = {
+		addTransaction,
+		printWallet,
+		applyTransactionFees,
+		findHighestTransaction,
+		swapTransactions,
+		manageFlags,
+		totalAndAverage
+	};
+	int operation = 0;
+	printf("--Crypto Wallet--\n");
+	while (1) {
+		printf("1. Add Transaction\n");
+		printf("2. Display Transaction\n");
+		printf("3. Apply Transaction Fees\n");
+		printf("4. Find Highest Transaction\n");
+		printf("5. Swap Transactions\n");
+		printf("6. Manage Flags\n");
+		printf("7. Calculate Total and Average\n");
+		printf("8. Exit\n");
+
+		printf("Enter Choice: ");
+		scanf_s("%d", &operation);
+		while (getchar() != '\n');
+		if (operation == 8) {
+			printf("Exiting Program...\n");
+			break;
+		}
+		else if (operation >= 1 && operation <= 7) {
+			menu[operation - 1](walletPtr);
+		}
+		else {
+			printf("Invalid option. Select again.\n");
+		}
+	}
+	//free wallet and walletSlots
 	freeWallet(walletPtr);
 
     return 0;
 }
-
+//
+//FUNCTION : initializeWallet
+//DESCRIPTION : This function creates a new wallet to hold the array of walletSlots. It multiplies walletSlots by 
+//				the wallet_capacity to get the total size of the array.
+//PARAMETERS : does not have any parameters
+//RETURNS : returns a pointer to the wallet.
+//
 wallet* initializeWallet(void) {
-    printf("sizeof(wallet): %zu\n", sizeof(wallet));
-    printf("sizeof(walletSlot): %zu\n", sizeof(walletSlot));
-
-    wallet* newWallet = (wallet*)malloc(sizeof(wallet));
+    //mallocs memory for the wallet
+	wallet* newWallet = (wallet*)malloc(sizeof(wallet));
     if (newWallet == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
         return NULL;
     }
-
+	//mallocs memory for the walletSlots
     newWallet->transactions = (walletSlot*)malloc(sizeof(walletSlot) * WALLET_CAPACITY);
     if (newWallet->transactions == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
         free(newWallet);
         return NULL;
     }
-
+	//intialize topIndex and capacity
     newWallet->topIndex = -1;
     newWallet->capacity = WALLET_CAPACITY;
     
-
     return newWallet;
 }
 //
@@ -54,14 +81,17 @@ wallet* initializeWallet(void) {
 //RETURNS : does not have a return value.
 //
 bool resizeWallet(wallet* walletPtr) {
-	int newCapacity = walletPtr->capacity * 2;
+	int additionalCapacity = 5;
+	int newCapacity = walletPtr->capacity + additionalCapacity;
+	//resizes array based on size of walletSlot x the newCapacity number
 	walletSlot* resizedArray = (walletSlot*)realloc(walletPtr->transactions, sizeof(walletSlot) * newCapacity);
 	if (resizedArray == NULL) {
 		fprintf(stderr, "Failed to resize wallet.\n");
 		return false;
 	}
-
+	//walletPtr now points to new array
 	walletPtr->transactions = resizedArray;
+	//capacity is updated to new 
 	walletPtr->capacity = newCapacity;
 	return true;
 }
@@ -110,8 +140,9 @@ if (scanf_s("%lf", &currencyAmount) != 1) {
 			break;
 		}
 		if (isWalletFull(walletPtr)) {
-			printf("Wallet is full.\n");
-			break;
+			printf("Increasing wallet size.\n");
+			resizeWallet(walletPtr);
+			
 		}
 		walletSlot newSlot = newTransaction(currencyAmount);
 		pushToWallet(walletPtr, newSlot);
@@ -290,6 +321,8 @@ void manageFlags(wallet* walletPtr) {
 	}
 	
 	while (getchar() != '\n');
+	//adjust for proper index
+	index--;
 	printf("1. Set Processed\n");
 	printf("2. Clear Processed\n");
 	printf("3. Toggle Refund\n");
@@ -298,7 +331,7 @@ void manageFlags(wallet* walletPtr) {
 	while (scanf_s("%d", &menu) != 1) {
 		while (getchar() != '\n');
 		printf("Invalid Input. Select a number.\n");
-	}
+	}	
 	switch (menu)
 	{
 	case 1:
@@ -373,8 +406,9 @@ void totalAndAverage(wallet* walletPtr) {
 	double averageTransaction = 0;
 	for (int i = 0; i <= walletPtr->topIndex; i++) {
 		totalAmount += walletPtr->transactions[i].transactionAmount;
-		averageTransaction = totalAmount / walletPtr->topIndex;
+		
 	}
+	averageTransaction = totalAmount / (walletPtr->topIndex + 1);
 	printf("Total Transaction Amount: $%.2lf\n", totalAmount);
 	printf("Average Transaction value: $%.2lf\n", averageTransaction);
 }
@@ -386,7 +420,7 @@ void totalAndAverage(wallet* walletPtr) {
 //
 void freeWallet(wallet* walletPtr) {
     if (walletPtr) {
-		//frees the transactions first
+		//frees the array of transactions first
         free(walletPtr->transactions);
 		//frees the wallet second
         free(walletPtr);
