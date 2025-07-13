@@ -1,7 +1,12 @@
+//FILE : Assignment2.c
+//PROJECT : SENG1005 ASSIGNMENT 3 –  ARRAY AND POINTER TECHNIQUES WITH BITWISE OPERATIONS
+//PROGRAMMER : Nicholas Turco / student#: 9056530
+//FIRST VERSION : 07/10/2025
+/*DESCRIPTION: This program will create a crypto wallet that will hold a number of transactions that will be added by the user.
+It contains a number of fucntions such as adding transactions, displaying transactions, adding a percentage fee, finding the highest value, 
+swapping transactions, manages flags with bitwise operations, and calculating the total and average of all transactions.*/
 #include "Assignment3.h"
 #include <stdlib.h>
-
-
 
 int main() {
 	//intialize wallet
@@ -202,13 +207,15 @@ void printWallet(wallet* walletPtr) {
 		printf("Wallet is empty.\n");
 		return;
 	}
+	int counter = 1;
+	walletSlot* endPtr = walletPtr->transactions + walletPtr->topIndex;
 	printf("Transactions\n");
-	for (int i = 0; i <= walletPtr->topIndex; i++) {
-		//ternary operator used chek whether processed or refunded are true or false
-		printf("Transaction %d: $%.2lf, Processed: %s, Refunded: %s\n", (i + 1), walletPtr->transactions[i].transactionAmount, 
-			(walletPtr->transactions[i].flags & PROCESSED_BIT) ? "Yes" : "No", 
-			(walletPtr->transactions[i].flags & REFUNDED_BIT) ? "Yes" : "No");
-	}
+	for (walletSlot* indexPtr = walletPtr->transactions; indexPtr <= endPtr; indexPtr++) {
+		printf("Transaction %d: $%.2lf, Processed: %s, Refunded: %s\n", counter, indexPtr->transactionAmount,
+			(indexPtr->flags & PROCESSED_BIT) ? "Yes" : "No",
+			(indexPtr->flags & REFUNDED_BIT) ? "Yes" : "No");
+		counter++;	
+	}	
 }
 //
 //FUNCTION : applyTransactionFees
@@ -225,15 +232,19 @@ void applyTransactionFees(wallet* walletPtr) {
 	int convertToDecimal = 100;
 	double percentageFee = 0;
 	printf("Enter fee percentage: ");
-	scanf_s("%lf", &percentageFee);
+	while (scanf_s("%lf", &percentageFee) != 1) {
+		printf("Invalid Input, select a number.\n");
+		while (getchar() != '\n');
+	}
 	while (getchar() != '\n');
+	//pointer to the end of the wallet, points to the next address just outside the array to include the topIndex value
+	walletSlot* endPtr = walletPtr->transactions + walletPtr->topIndex;
 	//converts to decimal
 	percentageFee = percentageFee / convertToDecimal;
-	for (int i = 0; i <= walletPtr->topIndex; i++) {
-		//calculates the amount to be subtracted
-		double feeAmount = walletPtr->transactions[i].transactionAmount * percentageFee;
-		//subtracts the fee from the transactionAmount
-		walletPtr->transactions[i].transactionAmount = walletPtr->transactions[i].transactionAmount - feeAmount;
+	//using a pointer to traverse the array instead of index variable
+	for (walletSlot* indexPtr = walletPtr->transactions; indexPtr <= endPtr; indexPtr++) {
+		double percent = indexPtr->transactionAmount * percentageFee;
+		indexPtr->transactionAmount -= percent;
 	}
 	printf("New Transaction amounts based on %.2lf%% rate\n", percentageFee);
 	printWallet(walletPtr);
@@ -251,6 +262,7 @@ void findHighestTransaction(wallet* walletPtr) {
 		printf("Wallet is empty.\n");
 		return;
 	}
+
 	walletSlot highestAmount = walletPtr->transactions[0];
 	for (int i = 0; i <= walletPtr->topIndex; i++) {
 		
@@ -316,7 +328,7 @@ void manageFlags(wallet* walletPtr) {
 	printf("Enter transaction index: ");
 	int index = 0;
 	while (scanf_s("%d", &index) != 1 || index < 1 || index > walletPtr->topIndex + 1) {
-		printf("Invalid index. Enter index between 1 and %d: ", walletPtr->topIndex + 1);
+		printf("Invalid index. Enter index between 1 and %d: \n", walletPtr->topIndex + 1);
 		while (getchar() != '\n');
 	}
 	
@@ -349,7 +361,7 @@ void manageFlags(wallet* walletPtr) {
 	default:
 		printf("invalid option.\n");
 		break;
-	}
+	}	
 }
 //
 //FUNCTION : setProcessed
@@ -404,9 +416,9 @@ void totalAndAverage(wallet* walletPtr) {
 	}
 	double totalAmount = 0;
 	double averageTransaction = 0;
-	for (int i = 0; i <= walletPtr->topIndex; i++) {
-		totalAmount += walletPtr->transactions[i].transactionAmount;
-		
+	walletSlot* endPtr = walletPtr->transactions + walletPtr->topIndex;
+	for (walletSlot* indexPtr = walletPtr->transactions; indexPtr <= endPtr; indexPtr++) {
+		totalAmount += indexPtr->transactionAmount;
 	}
 	averageTransaction = totalAmount / (walletPtr->topIndex + 1);
 	printf("Total Transaction Amount: $%.2lf\n", totalAmount);
